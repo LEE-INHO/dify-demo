@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Page 2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{font-family:sans-serif;margin:40px}
+    .box{padding:12px;border:1px solid #ddd;border-radius:8px;margin:12px 0}
+    iframe{width:100%;height:520px;border:1px solid #ddd;border-radius:8px}
+    code{background:#f6f8fa;padding:2px 6px;border-radius:4px}
+  </style>
+</head>
+<body>
+  <h1>Page 2</h1>
+
+  <div class="box">
+    <div>受け取った前ページURL: <code id="prevUrl">検出中…</code></div>
+  </div>
+
+  <!-- Dify アプリ埋め込み例（後で自分の埋め込みコードに置き換え） -->
+  <!-- 1) 公式の埋め込みスクリプト or iframeを貼る -->
+  <!-- 2) 初回メッセージ送信時に下のwindow.prevUrlを取り込む実装にする（後述） -->
+  <div class="box">
+    <h2>Dify アプリ</h2>
+    <iframe id="difyFrame" src="about:blank" title="Dify"></iframe>
+  </div>
+
+  <script>
+    // 受け取り（方式A: クエリ）
+    const params = new URLSearchParams(location.search);
+    let prevUrl = params.get('prev');
+
+    // 受け取り（方式B: sessionStorage）
+    if (!prevUrl) {
+      prevUrl = sessionStorage.getItem('prev_url') || document.referrer || '';
+    }
+
+    document.getElementById('prevUrl').textContent = prevUrl || '未取得';
+
+    // ここから先は「Dify側に渡すための入口」を用意するだけ
+    // 1) iframe直埋めする場合: Difyの公開URLにクエリで付けるか、初回ユーザーメッセージに含める
+    //    例: const difyUrl = 'https://<あなたのDify公開URL>?prev=' + encodeURIComponent(prevUrl);
+    //    document.getElementById('difyFrame').src = difyUrl;
+
+    // 2) 公式埋め込みJSやSDKを使う場合: 初期化オプションや最初のsendMessageで prevUrl を渡す
+
+    // とりあえずデモで中身が見えるよう、案内ページを表示
+    const html = `
+      <html><body style="font-family:sans-serif;padding:20px">
+        <h3>ここにDifyアプリを埋め込んでください</h3>
+        <p>受け取った prevUrl: <code>${prevUrl || '未取得'}</code></p>
+        <p>実運用では、初回メッセージやメタ情報としてこの値をDifyへ送ります。</p>
+      </body></html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    document.getElementById('difyFrame').src = URL.createObjectURL(blob);
+
+    // グローバルにも保持しておくと、埋め込みスクリプトから拾いやすい
+    window.prevUrl = prevUrl;
+  </script>
+</body>
+</html>
