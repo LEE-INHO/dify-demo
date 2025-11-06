@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>Page 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>body{font-family:sans-serif;margin:40px} button{font-size:16px;padding:8px 16px}</style>
+</head>
+<body>
+  <h1>Page 1</h1>
+  <p>このページから次へ遷移します。</p>
+
+  <button id="toPage2">Page 2へ</button>
+
+  <script>
+    // 方式A: クエリで渡す（確実に伝搬）
+    document.getElementById('toPage2').addEventListener('click', () => {
+      const prev = location.href;
+      const url = new URL('page2.html', location.href);
+      url.searchParams.set('prev', prev);
+      location.href = url.toString();
+    });
+
+    // 方式B: sessionStorageで渡す（URLを汚さない）
+    // document.getElementById('toPage2').addEventListener('click', () => {
+    //   sessionStorage.setItem('prev_url', location.href);
+    //   location.href = 'page2.html';
+    // });
+  </script>
+</body>
+</html>
